@@ -1,0 +1,37 @@
+{
+  "name": "claude-power-setup",
+  "version": "1.0.0",
+  "description": "Multi-agent orchestration, automation pipelines, and self-improvement for Claude Code",
+  "bin": {
+    "claude-power-setup": "./cli.js"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "agent",
+    "orchestration",
+    "automation",
+    "multi-agent"
+  ],
+  "author": "shyamsridhar",
+  "license": "MIT",
+  "files": [
+    "cli.js",
+    "install.sh",
+    "install.ps1",
+    "uninstall.sh",
+    "contexts/",
+    "bin/",
+    "instincts/",
+    "config/",
+    "reference/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/claude-power-setup.git"
+  }
+}
