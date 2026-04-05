@@ -111,7 +111,11 @@ if [ "$SKIP_ECC" = false ]; then
   header "Checking ECC (Everything Claude Code)..."
 
   if [ -f "${CLAUDE_HOME}/ecc/install-state.json" ]; then
-    ECC_PROFILE=$(node -e "try{const s=require('${CLAUDE_HOME}/ecc/install-state.json');console.log(s.request.profile||'custom')}catch{console.log('unknown')}" 2>/dev/null || echo "unknown")
+    ECC_STATE="${CLAUDE_HOME}/ecc/install-state.json"
+    if command -v cygpath &>/dev/null; then
+      ECC_STATE="$(cygpath -w "$ECC_STATE")"
+    fi
+    ECC_PROFILE=$(node -e "try{const s=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));console.log(s.request.profile||'custom')}catch{console.log('unknown')}" "$ECC_STATE" 2>/dev/null || echo "unknown")
     log "ECC installed (profile: ${ECC_PROFILE})"
   else
     warn "ECC not detected. This setup layers on top of ECC."
@@ -209,11 +213,19 @@ SETTINGS_FILE="${CLAUDE_HOME}/settings.json"
 
 if [ "$DRY_RUN" = false ]; then
   if [ -f "$SETTINGS_FILE" ]; then
+    # Convert paths for Node.js on Windows (POSIX /c/Users → C:\Users)
+    NODE_SETTINGS="$SETTINGS_FILE"
+    NODE_ENVFILE="${SCRIPT_DIR}/config/env-settings.json"
+    if command -v cygpath &>/dev/null; then
+      NODE_SETTINGS="$(cygpath -w "$SETTINGS_FILE")"
+      NODE_ENVFILE="$(cygpath -w "${SCRIPT_DIR}/config/env-settings.json")"
+    fi
+
     # Merge env vars non-destructively (only add keys that don't exist)
     node -e "
       const fs = require('fs');
-      const settings = JSON.parse(fs.readFileSync('${SETTINGS_FILE}', 'utf8'));
-      const newEnv = JSON.parse(fs.readFileSync('${SCRIPT_DIR}/config/env-settings.json', 'utf8'));
+      const settings = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+      const newEnv = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 
       if (!settings.env) settings.env = {};
 
@@ -229,9 +241,9 @@ if [ "$DRY_RUN" = false ]; then
       }
 
       if (added > 0) {
-        fs.writeFileSync('${SETTINGS_FILE}', JSON.stringify(settings, null, 2) + '\n');
+        fs.writeFileSync(process.argv[1], JSON.stringify(settings, null, 2) + '\n');
       }
-    " 2>/dev/null || warn "Could not merge env settings (settings.json may not exist yet)"
+    " "$NODE_SETTINGS" "$NODE_ENVFILE" 2>/dev/null || warn "Could not merge env settings (settings.json may not exist yet)"
   else
     warn "settings.json not found at ${SETTINGS_FILE} — create it or run Claude Code first"
   fi

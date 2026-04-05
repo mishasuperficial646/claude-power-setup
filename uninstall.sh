@@ -110,12 +110,18 @@ echo -e "${BOLD}Reverting env settings...${NC}"
 SETTINGS_FILE="${CLAUDE_HOME}/settings.json"
 
 if [ -f "$SETTINGS_FILE" ] && command -v node &>/dev/null; then
+  # Convert path for Node.js on Windows
+  NODE_SETTINGS="$SETTINGS_FILE"
+  if command -v cygpath &>/dev/null; then
+    NODE_SETTINGS="$(cygpath -w "$SETTINGS_FILE")"
+  fi
+
   if [ "$DRY_RUN" = true ]; then
     info "WOULD REVERT env keys: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS, ECC_HOOK_PROFILE, CLAUDE_CODE_ENABLE_COST_TRACKING"
   else
     node -e "
       const fs = require('fs');
-      const settings = JSON.parse(fs.readFileSync('${SETTINGS_FILE}', 'utf8'));
+      const settings = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
       if (!settings.env) process.exit(0);
 
       // Only remove keys if they match what we installed
@@ -137,9 +143,9 @@ if [ -f "$SETTINGS_FILE" ] && command -v node &>/dev/null; then
       }
 
       if (reverted > 0) {
-        fs.writeFileSync('${SETTINGS_FILE}', JSON.stringify(settings, null, 2) + '\n');
+        fs.writeFileSync(process.argv[1], JSON.stringify(settings, null, 2) + '\n');
       }
-    " 2>/dev/null || warn "Could not revert env settings"
+    " "$NODE_SETTINGS" 2>/dev/null || warn "Could not revert env settings"
   fi
 else
   warn "Cannot revert env settings (settings.json or node not found)"
