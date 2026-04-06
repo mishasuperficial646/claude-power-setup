@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-VERSION="1.0.0"
+VERSION="1.0.1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_HOME="${HOME}/.claude"
 MARKER_FILE="${CLAUDE_HOME}/.claude-power-setup-installed"
@@ -22,11 +22,101 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+# Anthropic brand palette (from anthropic.com CSS --heroes-accent)
+C1='\033[38;2;217;119;87m'   # #D97757 — primary coral
+C2='\033[38;2;232;149;106m'  # #E8956A — warm peach
+C3='\033[38;2;245;184;154m'  # #F5B89A — light sand
+C4='\033[38;2;250;249;240m'  # #FAF9F0 — Anthropic cream
+C5='\033[38;2;201;104;66m'   # #C96842 — deep coral
+C6='\033[38;2;184;90;45m'    # #B85A2D — burnt orange
+
 log()  { echo -e "${GREEN}[✓]${NC} $*"; }
 warn() { echo -e "${YELLOW}[!]${NC} $*"; }
 err()  { echo -e "${RED}[✗]${NC} $*"; }
 info() { echo -e "${CYAN}[i]${NC} $*"; }
 header() { echo -e "\n${BOLD}$*${NC}"; }
+
+# ── Responsive Banner ────────────────────────────────────────
+# Detects terminal width and renders appropriate banner size.
+# Full block art ≥55 cols, styled text fallback for narrow terminals.
+show_banner() {
+  local cols="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
+
+  if [ "$cols" -ge 55 ] 2>/dev/null; then
+    # Full stacked: CLAUDE / POWER / SETUP — Anthropic coral gradient
+    echo ""
+    echo -e "${C1}  ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗${NC}"
+    echo -e "${C1} ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝${NC}"
+    echo -e "${C5} ██║     ██║     ███████║██║   ██║██║  ██║█████╗  ${NC}"
+    echo -e "${C5} ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝  ${NC}"
+    echo -e "${C6} ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗${NC}"
+    echo -e "${C6}  ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝${NC}"
+    echo ""
+    echo -e "${C2} ██████╗  ██████╗ ██╗    ██╗███████╗██████╗ ${NC}"
+    echo -e "${C2} ██╔══██╗██╔═══██╗██║    ██║██╔════╝██╔══██╗${NC}"
+    echo -e "${C1} ██████╔╝██║   ██║██║ █╗ ██║█████╗  ██████╔╝${NC}"
+    echo -e "${C1} ██╔═══╝ ██║   ██║██║███╗██║██╔══╝  ██╔══██╗${NC}"
+    echo -e "${C5} ██║     ╚██████╔╝╚███╔███╔╝███████╗██║  ██║${NC}"
+    echo -e "${C5} ╚═╝      ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝${NC}"
+    echo ""
+    echo -e "${C3} ███████╗███████╗████████╗██╗   ██╗██████╗ ${NC}"
+    echo -e "${C3} ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗${NC}"
+    echo -e "${C2} ███████╗█████╗     ██║   ██║   ██║██████╔╝${NC}"
+    echo -e "${C2} ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝ ${NC}"
+    echo -e "${C1} ███████║███████╗   ██║   ╚██████╔╝██║     ${NC}"
+    echo -e "${C1} ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝     ${NC}"
+  else
+    # Styled text fallback for narrow terminals (<55 cols)
+    echo ""
+    echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${C1}  ██${NC} ${BOLD}Claude${NC}"
+    echo -e "${C5}  ██${NC} ${BOLD}Power${NC}"
+    echo -e "${C6}  ██${NC} ${BOLD}Setup${NC}"
+    echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  fi
+
+  echo ""
+  echo -e "  ${CYAN}v${VERSION}${NC}  ${BOLD}Multi-agent orchestration + self-improvement${NC}"
+  echo ""
+}
+
+# ── Responsive Summary ───────────────────────────────────────
+show_summary() {
+  local cols="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
+
+  echo ""
+  echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${BOLD}  Installation Complete ${GREEN}✓${NC}"
+  echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+  echo -e "  ${C1}Context Profiles${NC}"
+  echo -e "    ${C2}cdev${NC}         Development mode (TDD, quality)"
+  echo -e "    ${C2}corchestrate${NC} Team lead / swarm mode"
+  echo -e "    ${C2}creview${NC}      Security-first code review"
+  echo -e "    ${C2}cresearch${NC}    Read-only research mode"
+  echo ""
+  echo -e "  ${C1}Automation${NC}"
+  echo -e "    ${C2}cpipeline${NC}    Implement → clean → verify → commit"
+  echo -e "    ${C2}crouted${NC}      Opus research → Sonnet code → review"
+  echo -e "    ${C2}claude-loop${NC}  Continuous dev with safety gates"
+  echo -e "    ${C2}cfix/cclean${NC}  Quick fix / cleanup commands"
+  echo ""
+  echo -e "  ${C1}Features Enabled${NC}"
+  echo -e "    ${C5}▸${NC} Agent Teams (Swarm Mode)"
+  echo -e "    ${C5}▸${NC} Continuous Learning Observer"
+  echo -e "    ${C5}▸${NC} Cost Tracking"
+  echo -e "    ${C5}▸${NC} 4 Learned Instincts"
+  echo ""
+  echo -e "${C1}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+  echo -e "  ${BOLD}Next steps:${NC}"
+  echo -e "    1. ${C2}source ~/.claude/bin/claude-aliases.sh${NC}  (or restart terminal)"
+  echo -e "    2. Open a project and run: ${C2}claude${NC}"
+  echo -e "    3. Try: ${C3}'Please use a team of specialists for this'${NC}"
+  echo ""
+  echo -e "  Reference: ${CYAN}~/.claude/contexts/ORCHESTRATION-REFERENCE.md${NC}"
+  echo ""
+}
 
 # ── Parse args ─────────────────────────────────────────────────
 DRY_RUN=false
@@ -56,12 +146,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ── Banner ─────────────────────────────────────────────────────
-echo ""
-echo -e "${BOLD}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║  Claude Power Setup v${VERSION}                       ║${NC}"
-echo -e "${BOLD}║  Multi-agent orchestration + self-improvement   ║${NC}"
-echo -e "${BOLD}╚══════════════════════════════════════════════════╝${NC}"
-echo ""
+show_banner
 
 if [ "$DRY_RUN" = true ]; then
   warn "DRY RUN — no files will be written"
@@ -343,35 +428,4 @@ EOF
 fi
 
 # ── Summary ───────────────────────────────────────────────────
-echo ""
-echo -e "${BOLD}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║  Installation Complete                           ║${NC}"
-echo -e "${BOLD}╠══════════════════════════════════════════════════╣${NC}"
-echo -e "${BOLD}║${NC}                                                  ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}  Context Profiles:                               ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    cdev        — Development mode (TDD, quality)  ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    corchestrate — Team lead / swarm mode          ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    creview     — Security-first code review       ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    cresearch   — Read-only research mode          ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}                                                  ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}  Automation:                                     ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    cpipeline   — Implement → clean → verify → commit${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    crouted     — Opus research → Sonnet code → review${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    claude-loop — Continuous dev with safety gates ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    cfix/cclean — Quick fix / cleanup commands     ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}                                                  ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}  Features Enabled:                               ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    Agent Teams (Swarm Mode)                      ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    Continuous Learning Observer                   ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    Cost Tracking                                 ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}    4 Learned Instincts                           ${BOLD}║${NC}"
-echo -e "${BOLD}║${NC}                                                  ${BOLD}║${NC}"
-echo -e "${BOLD}╚══════════════════════════════════════════════════╝${NC}"
-echo ""
-echo "Next steps:"
-echo "  1. source ~/.claude/bin/claude-aliases.sh  (or restart terminal)"
-echo "  2. Open a project and run: claude"
-echo "  3. Try: 'Please use a team of specialists for this'"
-echo ""
-echo "Reference: ~/.claude/contexts/ORCHESTRATION-REFERENCE.md"
-echo ""
+show_summary

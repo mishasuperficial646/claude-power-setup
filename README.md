@@ -1,16 +1,25 @@
-# Claude Power Setup
+<p align="center">
+  <img src="assets/banner.svg" alt="Claude Power Setup banner" width="100%">
+</p>
 
-> **Multi-agent orchestration, automation pipelines, and recursive self-improvement for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).**
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-18%2B-green.svg" alt="Node.js 18+"></a>
+  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude%20Code-Extension-purple.svg" alt="Claude Code"></a>
+  <a href="https://www.npmjs.com/package/claude-power-setup"><img src="https://img.shields.io/npm/v/claude-power-setup.svg" alt="npm version"></a>
+</p>
 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js 18+](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Extension-purple.svg)](https://docs.anthropic.com/en/docs/claude-code)
-[![npx](https://img.shields.io/badge/npx-claude--power--setup-orange.svg)](https://www.npmjs.com/package/claude-power-setup)
+<p align="center">
+  <strong>Multi-agent orchestration, automation pipelines, and recursive self-improvement for <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>.</strong>
+</p>
 
-Layers on top of [ECC (Everything Claude Code)](https://github.com/affaan-m/everything-claude-code). One command to install:
+---
+
+Layers on top of [ECC (Everything Claude Code)](https://github.com/affaan-m/everything-claude-code). One command to install:  
 
 ```bash
-npx claude-power-setup
+npm install -g claude-power-setup
+claude-power-setup
 ```
 
 <video src="https://github.com/shyamsridhar123/claude-power-setup/releases/download/v1.0.0/feature-video.mp4" width="100%" autoplay loop muted playsinline controls></video>
@@ -68,6 +77,13 @@ The result: you spend less time managing the AI and more time thinking about the
 
 ## Quick Install
 
+### npm (recommended — any platform)
+
+```bash
+npm install -g claude-power-setup
+claude-power-setup
+```
+
 ### Linux / macOS / Git Bash (Windows)
 
 ```bash
@@ -82,12 +98,6 @@ bash install.sh
 git clone https://github.com/shyamsridhar123/claude-power-setup.git
 cd claude-power-setup
 powershell -ExecutionPolicy Bypass -File install.ps1
-```
-
-### npm (any platform)
-
-```bash
-npx claude-power-setup
 ```
 
 ### Options
@@ -199,6 +209,8 @@ claude-power-setup/
 ├── package.json               # npm package config
 ├── README.md                  # This file
 ├── LICENSE                    # MIT
+├── assets/                    # README assets
+│   └── banner.svg             # Terminal-style banner in Anthropic colors
 ├── contexts/                  # Mode profiles
 │   ├── dev.md
 │   ├── orchestrate.md

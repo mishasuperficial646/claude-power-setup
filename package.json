@@ -1,6 +1,6 @@
 {
   "name": "claude-power-setup",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Multi-agent orchestration, automation pipelines, and self-improvement for Claude Code",
   "bin": {
     "claude-power-setup": "./cli.js"
@@ -25,7 +25,8 @@
     "bin/",
     "instincts/",
     "config/",
-    "reference/"
+    "reference/",
+    "assets/"
   ],
   "engines": {
     "node": ">=18"
