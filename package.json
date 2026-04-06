@@ -1,9 +1,12 @@
 {
   "name": "claude-power-setup",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Multi-agent orchestration, automation pipelines, and self-improvement for Claude Code",
   "bin": {
     "claude-power-setup": "cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
   },
   "keywords": [
     "claude",
@@ -34,16 +37,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shyamsridhar123/claude-power-setup.git"
-  },
-  "dependencies": {
-    "@remotion/cli": "^4.0.445",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "remotion": "^4.0.445"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "typescript": "^6.0.2"
   }
 }

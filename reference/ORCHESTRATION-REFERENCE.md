@@ -72,53 +72,52 @@ caudit    # Security scan + harness audit
 ## Architecture: The Full Stack
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    YOU (the developer)                       │
-├─────────────────────────────────────────────────────────────┤
-│  MODE SELECTION (context profiles)                          │
-│  cdev | corchestrate | creview | cresearch                  │
-├─────────────────────────────────────────────────────────────┤
-│  ORCHESTRATION LAYER                                        │
-│  ┌──────────┐ ┌──────────┐ ┌───────────┐ ┌──────────────┐ │
-│  │  Agent    │ │  Swarm   │ │   Santa   │ │ Multi-Model  │ │
-│  │  Teams   │ │  Mode    │ │   Loop    │ │ Workflow     │ │
-│  │(natives) │ │(TeamTool)│ │(dual rev) │ │(Claude+Codex)│ │
-│  └──────────┘ └──────────┘ └───────────┘ └──────────────┘ │
-├─────────────────────────────────────────────────────────────┤
-│  LOOP ENGINE                                                │
-│  ┌───────────┐ ┌────────────┐ ┌──────────┐ ┌────────────┐ │
-│  │Sequential │ │ Continuous │ │  Infinite │ │ Ralphinho  │ │
-│  │Pipeline   │ │ PR Loop    │ │  Agentic  │ │ RFC DAG    │ │
-│  │(claude -p)│ │(CI gates)  │ │  (waves)  │ │(merge que) │ │
-│  └───────────┘ └────────────┘ └──────────┘ └────────────┘ │
-├─────────────────────────────────────────────────────────────┤
-│  QUALITY LAYER                                              │
-│  ┌───────────┐ ┌────────┐ ┌──────────┐ ┌────────────────┐ │
-│  │   TDD     │ │ Verify │ │ De-Slop  │ │ Quality Gate   │ │
-│  │  Guide    │ │  Loop  │ │  Pass    │ │ (PostToolUse)  │ │
-│  └───────────┘ └────────┘ └──────────┘ └────────────────┘ │
-├─────────────────────────────────────────────────────────────┤
-│  MEMORY & LEARNING                                          │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐   │
-│  │ Session Save  │ │ Instincts    │ │ Strategic        │   │
-│  │ /Resume       │ │ (v2.1)       │ │ Compact          │   │
-│  │ ~/.claude/    │ │ observe ->   │ │ (phase-aware)    │   │
-│  │ session-data/ │ │ score ->     │ │                  │   │
-│  │               │ │ promote ->   │ │                  │   │
-│  │               │ │ evolve       │ │                  │   │
-│  └──────────────┘ └──────────────┘ └──────────────────┘   │
-├─────────────────────────────────────────────────────────────┤
-│  SECURITY & HOOKS                                           │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐   │
-│  │ PreToolUse   │ │ PostToolUse  │ │ Stop / Session   │   │
-│  │ - security   │ │ - quality    │ │ - session save   │   │
-│  │ - config prot│ │ - cost track │ │ - evaluate       │   │
-│  │ - commit qual│ │ - build notif│ │ - cost report    │   │
-│  │ - observe    │ │ - observe    │ │ - desktop notify │   │
-│  └──────────────┘ └──────────────┘ └──────────────────┘   │
-├─────────────────────────────────────────────────────────────┤
-│  38 AGENTS │ 200+ SKILLS │ 30+ HOOKS │ 12 LANG RULES      │
-└─────────────────────────────────────────────────────────────┘
++-----------------------------------------------------------+
+| YOU (the developer)                                       |
++-----------------------------------------------------------+
+| MODES: cdev | orchestrate | creview | cresearch           |
++-----------------------------------------------------------+
+
+ORCHESTRATION LAYER
++----------+ +----------+ +-----------+ +--------------+
+| Agent    | | Swarm    | | Santa     | | Multi-Model  |
+| Teams    | | Mode     | | Loop      | | Workflow     |
+| (natives)| |(TeamTool)| |(dual rev) | |(Claude+Codex)|
++----------+ +----------+ +-----------+ +--------------+
+
+LOOP ENGINE
++-----------+ +------------+ +----------+ +------------+
+| Sequential| | Continuous | | Infinite | | Ralphinho  |
+| Pipeline  | | PR Loop    | | Agentic  | | RFC DAG    |
+| (claude-p)| | (CI gates) | | (waves)  | |(merge que) |
++-----------+ +------------+ +----------+ +------------+
+
+QUALITY LAYER
++-----------+ +--------+ +----------+ +----------------+
+| TDD       | | Verify | | De-Slop  | | Quality Gate   |
+| Guide     | | Loop   | | Pass     | | (PostToolUse)  |
++-----------+ +--------+ +----------+ +----------------+
+
+MEMORY & LEARNING
++--------------+ +--------------+ +------------------+
+| Session Save | | Instincts    | | Strategic        |
+| /Resume      | | (v2.1)       | | Compact          |
+| ~/.claude/   | | observe ->   | | (phase-aware)    |
+| session-data/| | score ->     | |                  |
+|              | | promote ->   | |                  |
+|              | | evolve       | |                  |
++--------------+ +--------------+ +------------------+
+
+SECURITY & HOOKS
++--------------+ +--------------+ +------------------+
+| PreToolUse   | | PostToolUse  | | Stop / Session   |
+| - security   | | - quality    | | - session save   |
+| - config prot| | - cost track | | - evaluate       |
+| - commit qual| | - build notif| | - cost report    |
+| - observe    | | - observe    | | - desktop notify |
++--------------+ +--------------+ +------------------+
+
+38 AGENTS | 200+ SKILLS | 30+ HOOKS | 12 LANG RULES
 ```
 
 ## Self-Improvement Loop
@@ -126,98 +125,105 @@ caudit    # Security scan + harness audit
 ### The Full Recursive Learning Pipeline
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    RECURSIVE SELF-IMPROVEMENT                    │
-│                                                                  │
-│  LAYER 1: OBSERVATION (automatic, every tool use)                │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ PreToolUse hook ──→ observe.sh ──→ observations.jsonl   │    │
-│  │ PostToolUse hook ──→ observe.sh ──→ observations.jsonl  │    │
-│  │                                                         │    │
-│  │ Captures: tool name, input, output, session, project    │    │
-│  │ Scrubs: secrets, API keys (regex-based redaction)       │    │
-│  │ Scoped: per-project (git remote hash) or global         │    │
-│  │ Auto-purge: files >10MB archived, >30 days deleted      │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│       │                                                          │
-│       ▼                                                          │
-│  LAYER 2: PATTERN DETECTION (background observer, Haiku)         │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ Observer agent runs every 5 min (now ENABLED)           │    │
-│  │ Detects:                                                │    │
-│  │   - User corrections → instinct                        │    │
-│  │   - Error resolutions → instinct                       │    │
-│  │   - Repeated workflows → instinct                      │    │
-│  │   - Scope decision: project or global?                  │    │
-│  │                                                         │    │
-│  │ Also: /learn (manual) and /learn-eval (self-evaluated)  │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│       │                                                          │
-│       ▼                                                          │
-│  LAYER 3: INSTINCTS (atomic learned behaviors)                   │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ Format: YAML with confidence scoring                    │    │
-│  │                                                         │    │
-│  │  id: prefer-functional-style                            │    │
-│  │  trigger: "when writing new functions"                  │    │
-│  │  confidence: 0.7  (0.3=tentative → 0.9=certain)        │    │
-│  │  domain: code-style                                     │    │
-│  │  scope: project                                         │    │
-│  │                                                         │    │
-│  │ Storage:                                                │    │
-│  │  Per-project: ~/.claude/homunculus/projects/<hash>/      │    │
-│  │  Global:      ~/.claude/homunculus/instincts/personal/  │    │
-│  │                                                         │    │
-│  │ Confidence evolves:                                     │    │
-│  │  ↑ pattern observed again, user doesn't correct         │    │
-│  │  ↓ user explicitly corrects, contradicting evidence     │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│       │                                                          │
-│       ▼                                                          │
-│  LAYER 4: PROMOTION (project → global)                           │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ /promote: Move high-confidence project instincts        │    │
-│  │           to global scope                               │    │
-│  │                                                         │    │
-│  │ Auto-promote criteria:                                  │    │
-│  │   - Same instinct in 2+ projects                        │    │
-│  │   - Average confidence >= 0.8                           │    │
-│  │                                                         │    │
-│  │ Scope guide:                                            │    │
-│  │   Project: React hooks, Django patterns, file structure │    │
-│  │   Global:  security practices, git workflow, tool prefs │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│       │                                                          │
-│       ▼                                                          │
-│  LAYER 5: EVOLUTION (instincts → skills/agents/commands)         │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ /evolve: Cluster 5+ related instincts → generate:      │    │
-│  │   - SKILL.md (workflow definition)                      │    │
-│  │   - agent.md (specialist subagent)                      │    │
-│  │   - command.md (slash command)                          │    │
-│  │                                                         │    │
-│  │ Output: ~/.claude/homunculus/evolved/                    │    │
-│  │         or projects/<hash>/evolved/                     │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│       │                                                          │
-│       ▼                                                          │
-│  LAYER 6: V1 LEARNED SKILLS (already accumulated)                │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ 7 skills already learned from previous sessions:        │    │
-│  │   - azure-copilot-proxy-llm-gateway                     │    │
-│  │   - deerflow-model-thinking-modes                       │    │
-│  │   - deerflow-windows-docker-setup                       │    │
-│  │   - openclaw-gateway-systemd-fix                        │    │
-│  │   - openclaw-pi-security-hardening                      │    │
-│  │   - pamir-device-reference                              │    │
-│  │   - syncthing-obsidian-vault-sync                       │    │
-│  │                                                         │    │
-│  │ Location: ~/.claude/skills/learned/                     │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│                                                                  │
-│  NEXT SESSION: All instincts + learned skills auto-loaded        │
-│  → Better behavior → more accurate instincts → compounds        │
-└─────────────────────────────────────────────────────────────────┘
++-----------------------------------------------------------------+
+| RECURSIVE SELF-IMPROVEMENT                                      |
++-----------------------------------------------------------------+
+
+LAYER 1: OBSERVATION (automatic, every tool use)
++---------------------------------------------------------+
+| PreToolUse hook  -> observe.sh -> observations.jsonl    |
+| PostToolUse hook -> observe.sh -> observations.jsonl    |
+|                                                         |
+| Captures: tool name, input, output, session, project    |
+| Scrubs: secrets, API keys (regex-based redaction)       |
+| Scoped: per-project (git remote hash) or global         |
+| Auto-purge: files >10MB archived, >30 days deleted      |
++---------------------------------------------------------+
+                         |
+                         v
+
+LAYER 2: PATTERN DETECTION (background observer, Haiku)
++---------------------------------------------------------+
+| Observer agent runs every 5 min (now ENABLED)           |
+| Detects:                                                |
+|   - User corrections -> instinct                        |
+|   - Error resolutions -> instinct                       |
+|   - Repeated workflows -> instinct                      |
+|   - Scope decision: project or global?                  |
+|                                                         |
+| Also: /learn (manual) and /learn-eval (self-evaluated)  |
++---------------------------------------------------------+
+                         |
+                         v
+
+LAYER 3: INSTINCTS (atomic learned behaviors)
++---------------------------------------------------------+
+| Format: YAML with confidence scoring                    |
+|                                                         |
+| id: prefer-functional-style                             |
+| trigger: "when writing new functions"                   |
+| confidence: 0.7  (0.3=tentative -> 0.9=certain)         |
+| domain: code-style                                      |
+| scope: project                                          |
+|                                                         |
+| Storage:                                                |
+| Per-project: ~/.claude/homunculus/projects/<hash>/      |
+| Global: ~/.claude/homunculus/instincts/personal/        |
+|                                                         |
+| Confidence evolves:                                     |
+|   + pattern observed again, user does not correct       |
+|   - user explicitly corrects, contradicting evidence    |
++---------------------------------------------------------+
+                         |
+                         v
+
+LAYER 4: PROMOTION (project -> global)
++---------------------------------------------------------+
+| /promote moves high-confidence project instincts        |
+| to global scope                                         |
+|                                                         |
+| Auto-promote criteria:                                  |
+|   - Same instinct in 2+ projects                        |
+|   - Average confidence >= 0.8                           |
+|                                                         |
+| Scope guide:                                            |
+|   Project: React hooks, Django patterns, file structure |
+|   Global: security practices, git workflow, tool prefs  |
++---------------------------------------------------------+
+                         |
+                         v
+
+LAYER 5: EVOLUTION (instincts -> skills/agents/commands)
++---------------------------------------------------------+
+| /evolve clusters 5+ related instincts into:             |
+|   - SKILL.md (workflow definition)                      |
+|   - agent.md (specialist subagent)                      |
+|   - command.md (slash command)                          |
+|                                                         |
+| Output: ~/.claude/homunculus/evolved/                   |
+|         or projects/<hash>/evolved/                     |
++---------------------------------------------------------+
+                         |
+                         v
+
+LAYER 6: V1 LEARNED SKILLS (already accumulated)
++---------------------------------------------------------+
+| 7 skills already learned from previous sessions:        |
+|   - azure-copilot-proxy-llm-gateway                     |
+|   - deerflow-model-thinking-modes                       |
+|   - deerflow-windows-docker-setup                       |
+|   - openclaw-gateway-systemd-fix                        |
+|   - openclaw-pi-security-hardening                      |
+|   - pamir-device-reference                              |
+|   - syncthing-obsidian-vault-sync                       |
+|                                                         |
+| Location: ~/.claude/skills/learned/                     |
++---------------------------------------------------------+
+
++-----------------------------------------------------------------+
+| NEXT SESSION: All instincts + learned skills auto-loaded        |
+| Better behavior -> more accurate instincts -> compounds         |
++-----------------------------------------------------------------+
 ```
 
 ### Learning Commands Quick Reference
@@ -268,13 +274,6 @@ Observer: ENABLED (was disabled, now active)
 /evolve                   # Generate skills from instinct clusters
 /skill-health             # Dashboard of your skill portfolio
 /harness-audit            # Score your overall setup
-```
-  │       └─ When seen in 2+ projects, auto-promote candidate
-  │
-  └─ /evolve: EVOLVE clusters of instincts → full skills/agents
-          └─ 5+ related instincts → generate SKILL.md or agent.md
-
-NEXT SESSION: Instincts automatically loaded → better behavior
 ```
 
 ## Decision Matrix: Which Tool When

@@ -29,9 +29,16 @@ param(
     [switch]$Help
 )
 
-$Version = "1.0.0"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $ClaudeHome = Join-Path $env:USERPROFILE ".claude"
+
+# Read version from package.json (single source of truth)
+try {
+    $PkgJson = Get-Content (Join-Path $ScriptDir "package.json") -Raw | ConvertFrom-Json
+    $Version = $PkgJson.version
+} catch {
+    $Version = "0.0.0"
+}
 
 if ($Help) {
     Get-Help $MyInvocation.MyCommand.Definition -Detailed
@@ -163,6 +170,63 @@ if (-not $DryRun -and (Test-Path $SettingsFile) -and (Test-Path $EnvFile)) {
     }
 } elseif ($DryRun) {
     Write-Host "[i] WOULD MERGE: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS, ECC_HOOK_PROFILE, CLAUDE_CODE_ENABLE_COST_TRACKING" -ForegroundColor Cyan
+}
+
+# ── Observer config ──────────────────────────────────────────
+Write-Host "`nConfiguring continuous learning observer..." -ForegroundColor White
+$ObserverSrc = Join-Path $ScriptDir "config\observer-config.json"
+$ObserverUpdated = $false
+
+$CLv2Paths = @(
+    (Join-Path $ClaudeHome "skills\continuous-learning-v2\config.json")
+)
+# Also check plugin cache paths
+$PluginCachePath = Join-Path $ClaudeHome "plugins\cache\everything-claude-code"
+if (Test-Path $PluginCachePath) {
+    Get-ChildItem $PluginCachePath -Directory | ForEach-Object {
+        $CandidatePath = Join-Path $_.FullName "latest\skills\continuous-learning-v2\config.json"
+        $CLv2Paths += $CandidatePath
+    }
+}
+
+foreach ($ConfigPath in $CLv2Paths) {
+    if (Test-Path $ConfigPath) {
+        if ($DryRun) {
+            Write-Host "[i] WOULD UPDATE: $ConfigPath (observer.enabled=true)" -ForegroundColor Cyan
+        } else {
+            try {
+                $ObserverConfig = Get-Content $ObserverSrc -Raw | ConvertFrom-Json
+                $ExistingConfig = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+                # Merge: only set observer.enabled, preserve other keys
+                if (-not $ExistingConfig.observer) {
+                    $ExistingConfig | Add-Member -Type NoteProperty -Name "observer" -Value ([PSCustomObject]@{})
+                }
+                $ExistingConfig.observer | Add-Member -Type NoteProperty -Name "enabled" -Value $true -Force
+                $ExistingConfig | ConvertTo-Json -Depth 10 | Set-Content $ConfigPath -Encoding UTF8
+                Write-Host "[+] Observer enabled: $ConfigPath" -ForegroundColor Green
+            } catch {
+                Write-Host "[!] Could not update observer config: $_" -ForegroundColor Yellow
+            }
+        }
+        $ObserverUpdated = $true
+        break
+    }
+}
+
+if (-not $ObserverUpdated) {
+    Write-Host "[!] CLv2 config not found - observer not configured (install ECC first)" -ForegroundColor Yellow
+}
+
+# ── Write marker file ────────────────────────────────────────
+if (-not $DryRun) {
+    $Marker = @{
+        version = $Version
+        installed_at = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        platform = "windows"
+        installer = "powershell"
+        components = @("contexts", "bin-scripts", "instincts", "env-settings", "observer-config", "reference-doc")
+    }
+    $Marker | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $ClaudeHome ".claude-power-setup-installed") -Encoding UTF8
 }
 
 # ── Summary ───────────────────────────────────────────────────

@@ -9,10 +9,16 @@
 
 set -euo pipefail
 
-VERSION="1.0.1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_HOME="${HOME}/.claude"
 MARKER_FILE="${CLAUDE_HOME}/.claude-power-setup-installed"
+
+# Read version from package.json (single source of truth)
+if command -v node &>/dev/null; then
+  VERSION="$(node -e "console.log(require('${SCRIPT_DIR}/package.json').version)" 2>/dev/null || echo "0.0.0")"
+else
+  VERSION="$(grep '"version"' "${SCRIPT_DIR}/package.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')"
+fi
 
 # ── Colors ─────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -350,8 +356,20 @@ for config_path in "${CLV2_CONFIG_PATHS[@]}"; do
   for resolved in $config_path; do
     if [ -f "$resolved" ]; then
       if [ "$DRY_RUN" = false ]; then
-        cp "${SCRIPT_DIR}/config/observer-config.json" "$resolved"
-        log "Observer enabled: $(basename "$(dirname "$(dirname "$resolved")")")/config.json"
+        # Merge observer.enabled=true without clobbering other keys
+        NODE_RESOLVED="$resolved"
+        if command -v cygpath &>/dev/null; then
+          NODE_RESOLVED="$(cygpath -w "$resolved")"
+        fi
+        node -e "
+          const fs = require('fs');
+          const config = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+          if (!config.observer) config.observer = {};
+          config.observer.enabled = true;
+          fs.writeFileSync(process.argv[1], JSON.stringify(config, null, 2) + '\n');
+        " "$NODE_RESOLVED" 2>/dev/null && \
+          log "Observer enabled: $(basename "$(dirname "$(dirname "$resolved")")")/config.json" || \
+          warn "Could not update observer config"
         OBSERVER_UPDATED=true
       else
         info "WOULD UPDATE: $resolved (observer.enabled=true)"

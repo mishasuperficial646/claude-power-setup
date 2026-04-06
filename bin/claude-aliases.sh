@@ -3,12 +3,23 @@
 # Source this in your .bashrc or .bash_profile:
 #   source ~/.claude/bin/claude-aliases.sh
 
+# ── Helper: launch Claude with a context profile ─────────
+_claude_with_context() {
+  local ctx="$HOME/.claude/contexts/$1"
+  if [ ! -f "$ctx" ]; then
+    echo "[!] Context profile not found: $ctx" >&2
+    echo "    Run claude-power-setup to reinstall." >&2
+    return 1
+  fi
+  claude --system-prompt "$(cat "$ctx")"
+}
+
 # ── Mode-Switched Claude Sessions ──────────────────────────
 alias c='claude'
-alias cdev='claude --system-prompt "$(cat ~/.claude/contexts/dev.md)"'
-alias corchestrate='claude --system-prompt "$(cat ~/.claude/contexts/orchestrate.md)"'
-alias creview='claude --system-prompt "$(cat ~/.claude/contexts/review.md)"'
-alias cresearch='claude --system-prompt "$(cat ~/.claude/contexts/research.md)"'
+alias cdev='_claude_with_context dev.md'
+alias corchestrate='_claude_with_context orchestrate.md'
+alias creview='_claude_with_context review.md'
+alias cresearch='_claude_with_context research.md'
 
 # ── Quick Non-Interactive Pipelines ────────────────────────
 alias cfix='claude -p "Run build + lint + tests. Fix any failures. Do not add features."'
@@ -50,11 +61,11 @@ crouted() {
 # ── Worktree Helpers ──────────────────────────────────────
 # Usage: cwt feature-auth "Implement JWT authentication"
 cwt() {
-  local name="$1"
-  local task="$2"
+  local name="${1:?Usage: cwt <name> [task]}"
+  local task="${2:-}"
   git worktree add -b "feat/${name}" "../${PWD##*/}-${name}" HEAD
-  echo "Worktree created: ../$(basename $PWD)-${name}"
-  echo "Run: cd ../$(basename $PWD)-${name} && claude"
+  echo "Worktree created: ../$(basename "$PWD")-${name}"
+  echo "Run: cd ../$(basename "$PWD")-${name} && claude"
   if [ -n "$task" ]; then
     (cd "../${PWD##*/}-${name}" && claude -p "$task")
   fi
@@ -62,7 +73,7 @@ cwt() {
 
 # Clean up worktree after merge
 cwt-clean() {
-  local name="$1"
+  local name="${1:?Usage: cwt-clean <name>}"
   git worktree remove "../${PWD##*/}-${name}" 2>/dev/null
   git branch -d "feat/${name}" 2>/dev/null
   echo "Cleaned: ${name}"

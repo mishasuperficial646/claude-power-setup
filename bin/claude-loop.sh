@@ -14,14 +14,14 @@ shift
 
 MAX_RUNS=5
 MODE="safe"
-MODEL=""
+MODEL_ARGS=()
 NOTES_FILE="SHARED_TASK_NOTES.md"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --max-runs) MAX_RUNS="$2"; shift 2 ;;
     --mode) MODE="$2"; shift 2 ;;
-    --model) MODEL="--model $2"; shift 2 ;;
+    --model) MODEL_ARGS=(--model "$2"); shift 2 ;;
     *) echo "Unknown flag: $1"; exit 1 ;;
   esac
 done
@@ -30,7 +30,7 @@ echo "=== Claude Loop ==="
 echo "Prompt: ${PROMPT}"
 echo "Max runs: ${MAX_RUNS}"
 echo "Mode: ${MODE}"
-echo "Model: ${MODEL:-default}"
+echo "Model: ${MODEL_ARGS[*]:-default}"
 echo ""
 
 # Initialize shared notes
@@ -52,7 +52,9 @@ if [ "$MODE" = "safe" ]; then
   QUALITY_GATE='After implementation, run the full build + lint + test suite. Fix any failures before completing.'
 fi
 
+COMPLETED=0
 for i in $(seq 1 "$MAX_RUNS"); do
+  COMPLETED=$i
   echo ""
   echo "━━━ Iteration ${i}/${MAX_RUNS} ━━━"
 
@@ -69,16 +71,16 @@ After completing your work:
 2. If the task is fully complete, include the line: LOOP_COMPLETE
 3. Commit your changes with a conventional commit message"
 
-  claude -p $MODEL "$ITERATION_PROMPT"
+  claude -p "${MODEL_ARGS[@]}" "$ITERATION_PROMPT"
 
   # Check for completion signal
   if grep -q "LOOP_COMPLETE" "$NOTES_FILE" 2>/dev/null; then
     echo ""
-    echo "=== Loop completed at iteration ${i} (task signaled complete) ==="
+    echo "=== Loop completed at iteration ${COMPLETED} (task signaled complete) ==="
     break
   fi
 done
 
 echo ""
-echo "=== Loop finished after ${i} iterations ==="
-echo "Notes: $(cat "$NOTES_FILE" | head -20)"
+echo "=== Loop finished after ${COMPLETED} iterations ==="
+echo "Notes: $(head -20 "$NOTES_FILE")"

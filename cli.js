@@ -14,7 +14,7 @@ const os = require("os");
 
 const SCRIPT_DIR = __dirname;
 const CLAUDE_HOME = path.join(os.homedir(), ".claude");
-const VERSION = "1.0.0";
+const VERSION = require("./package.json").version;
 
 const args = process.argv.slice(2);
 
