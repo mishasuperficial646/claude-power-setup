@@ -18,7 +18,10 @@ describe("Instinct format validation", () => {
 
   for (const file of instinctFiles) {
     describe(file, () => {
-      const content = fs.readFileSync(path.join(INSTINCTS_DIR, file), "utf8");
+      // Normalize line endings for cross-platform compatibility (CRLF -> LF)
+      const content = fs
+        .readFileSync(path.join(INSTINCTS_DIR, file), "utf8")
+        .replace(/\r\n/g, "\n");
 
       it("has YAML frontmatter delimiters", () => {
         assert.ok(content.startsWith("---\n"), "Missing opening ---");
