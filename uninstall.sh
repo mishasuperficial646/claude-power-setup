@@ -20,8 +20,6 @@ NC='\033[0m'
 
 # Anthropic brand palette
 C1='\033[38;2;217;119;87m'   # #D97757 — primary coral
-C5='\033[38;2;201;104;66m'   # #C96842 — deep coral
-C6='\033[38;2;184;90;45m'    # #B85A2D — burnt orange
 
 log()  { echo -e "${GREEN}[✓]${NC} $*"; }
 warn() { echo -e "${YELLOW}[!]${NC} $*"; }

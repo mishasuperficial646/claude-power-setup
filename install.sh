@@ -32,7 +32,6 @@ NC='\033[0m'
 C1='\033[38;2;217;119;87m'   # #D97757 — primary coral
 C2='\033[38;2;232;149;106m'  # #E8956A — warm peach
 C3='\033[38;2;245;184;154m'  # #F5B89A — light sand
-C4='\033[38;2;250;249;240m'  # #FAF9F0 — Anthropic cream
 C5='\033[38;2;201;104;66m'   # #C96842 — deep coral
 C6='\033[38;2;184;90;45m'    # #B85A2D — burnt orange
 

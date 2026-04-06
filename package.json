@@ -1,12 +1,12 @@
 {
   "name": "claude-power-setup",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Multi-agent orchestration, automation pipelines, and self-improvement for Claude Code",
   "bin": {
     "claude-power-setup": "cli.js"
   },
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node test/run.js"
   },
   "keywords": [
     "claude",
